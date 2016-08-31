@@ -5,7 +5,7 @@ This Magento 2.x module provides a payment method for the Purchased.at service.
 ## Installation
 
 ### Pre-requisites
-Make sure your Magento 
+Make sure your Magento 2.x installation is completed via composer or the web based Setup Wizard. 
 
 ### Install using `composer`
 
@@ -27,18 +27,18 @@ Make sure your Magento
   	```
 	> Make sure you use the Magento bundled `composer`. If you would like to run it without `php -f` like above, make sure the binary has `u+x` privileges. Same applies to the `magento` binary, make it `u+x` if needed.
 
-### Install using from Magento Connect
-Our module submission is being reviewed. You will be able to installed via Magento Connect as soon as it gets approved.
+### Install from Magento Connect
+Our module submission is being reviewed. You will be able to install it via Magento Connect as soon as it gets approved.
 
 ## Configuration
 To get the payment module up and running you need to do some configuration that involves setting your Purchased.at API key. So if you do not already have an API key, head first to your [Vendor Dashboard](https://vendor.purchased.at/) and create a project with an API key.
 Having your API key prepared:
-1. go to your Magento Admin 
-2. navigate to Stores / Configuration / Sales / Payment methods 
-3. scroll down to the Purchased.at section. 
-4. Here you can set the title, the allowed countries, instructions text, sort order etc. but **make sure you enter you API key** it comoulsory even for testing. 
+1. Go to your Magento Admin 
+2. Navigate to Stores / Configuration / Sales / Payment methods 
+3. Scroll down to the Purchased.at section 
+4. Here you can set the title, the allowed countries, instructions text, sort order etc. but **make sure you enter you API key**, it is comoulsory even for testing. 
 
 > If you want to test the module, set the Test mode to "Test" otherwise set it to "Live".
 
 
-> If you don't see the Purchased.at among payment option at the store's checkout, please clear the Magento cache via on the Magento Admin under System > Cache Management > Flush Magento Cache.
+> If you don't see the Purchased.at among payment option at the store's checkout, please clear the Magento cache via the Magento Admin under System > Cache Management > Flush Magento Cache.
