@@ -86,6 +86,11 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_storemanager ;
 
     /**
+     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
+     */
+    protected $_priceCurrency;
+
+    /**
      * @var \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      */
     protected $_quoteRepository;
@@ -110,6 +115,7 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
      * @param Cart $cart
      * @param \Magento\Checkout\Model\Session $session
      * @param StoreManagerInterface $storemanager
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param CurrentCustomer $currentCustomer
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
@@ -129,6 +135,7 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Checkout\Model\Session $session,
         \Magento\Store\Model\StoreManagerInterface $storemanager,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Customer\Helper\Session\CurrentCustomer $currentCustomer,
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
@@ -139,6 +146,7 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
         $this->_session = $session ;
         $this->_current_customer = $currentCustomer ;
         $this->_storemanager = $storemanager ;
+        $this->_priceCurrency = $priceCurrency;
         $this->_quoteRepository = $quoteRepository ;
         parent::__construct($context,
             $registry,
@@ -231,8 +239,7 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
         $customer = $this->getCustomerInfo($customer_id);
         if ($quote->getGrandTotal() && ($customer->getEmail() || $guest_email != "")) {
             $quote_data = $quote->getData();
-            $grand_total = $quote_data['grand_total'];
-            $subtotal = $quote_data['subtotal_with_discount'];
+            $grand_total = $quote_data['base_grand_total'];
             $api_key = $this->getConfigData('api_key');
             if ($customer->getEmail()) {
                 $customer_email = $customer->getEmail() ;
@@ -250,10 +257,10 @@ class PurchasedatModel extends \Magento\Payment\Model\Method\AbstractMethod
             $om = \Magento\Framework\App\ObjectManager::getInstance();
             $resolver = $om->get('Magento\Framework\Locale\Resolver');
             $language = substr($resolver->getLocale(), 0, strpos($resolver->getLocale(), "_"));
-            $currency_code = $quote_data['global_currency_code'];
+            $currency_code = $this->_storemanager->getStore()->getBaseCurrency()->getCode() ;
             $checkout = null;
 
-            $shipping_rate = $grand_total - $subtotal;
+            $shipping_rate = $quote_data['base_shipping_amount'] ;
             // Create items list
             foreach ($this->_session->getQuote()->getAllItems() as $items) {
                 if ($checkout == null) {
