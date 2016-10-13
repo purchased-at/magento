@@ -198,6 +198,8 @@ class Finish extends \Magento\Framework\View\Element\Template
                     $order_id =-1;
                 }
                 $this->orderSender->send($order);
+                $order->setBaseTotalPaid($price->getGross());
+                $order->setTotalPaid($this->convertPrice($price->getGross()));
 
 				// pending transactions are awaiting payment
 				// and can become successful later
@@ -217,6 +219,7 @@ class Finish extends \Magento\Framework\View\Element\Template
                 if ($transaction->isTest()) {
                     $result_message .= "<br><strong>This was a TEST transaction</strong><br />" ;
                 }
+                $this->_patModel->createMagentoTransaction($order, $result->result) ;
             }
         }
         $this->addData(
@@ -227,5 +230,23 @@ class Finish extends \Magento\Framework\View\Element\Template
 
             ]
         );
+    }
+    
+    /**
+     * Convert a base price to the current currency, or to $currency, and return it
+     * @param float $amount
+     * @param object $store = null
+     * @param object $currency = null
+     */
+    public function convertPrice($amount, $store = null, $currency = null)
+    {
+    	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    	$priceCurrencyObject = $objectManager->get('Magento\Framework\Pricing\PriceCurrencyInterface');
+    	$storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+    	if ($store == null) {
+    		$store = $storeManager->getStore()->getStoreId();
+    	}
+    	$rate = $priceCurrencyObject->convert($amount, $store, $currency);
+    	return $rate ;
     }
 }
