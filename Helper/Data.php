@@ -20,10 +20,27 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * Return the number formatted price
      * @param $price
      * @return string
-     */    
+     */
     public function getNumberFormat($price)
     {
         return number_format($price, 2);
     }
 
+    /**
+     * Convert a base price to the current currency, or to $currency, and return it
+     * @param float $amount
+     * @param object $store = null
+     * @param object $currency = null
+     */
+    public function convertPrice($amount, $store = null, $currency = null)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $priceCurrencyObject = $objectManager->get('Magento\Framework\Pricing\PriceCurrencyInterface');
+        $storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+        if ($store == null) {
+            $store = $storeManager->getStore()->getStoreId();
+        }
+        $rate = $priceCurrencyObject->convert($amount, $store, $currency);
+        return $rate ;
+    }
 }
